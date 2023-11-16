@@ -2,6 +2,7 @@ package com.algolia.connector.connector.shopsphere;
 
 import com.algolia.connector.connector.model.ConfigurationData;
 import com.algolia.connector.connector.model.ShopPhereMongoRequest;
+import com.algolia.connector.connector.model.TransformModel;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Service
@@ -90,6 +92,13 @@ public class ShopsphereTransformer {
         configData.setConnectTo(document.getString("connectTo"));
 
         return configData;
+    }
+
+    public static TransformModel transformModelTransformer(Document transformDocument) {
+        TransformModel transformModel = new TransformModel();
+        transformModel.setValueTransformMap((Map<String, String>) transformDocument.get("valueTransform"));
+        transformModel.setAttributeTransformMap((Map<String, String>) transformDocument.get("attributeTransform"));
+        return transformModel;
     }
 
 }

@@ -1,8 +1,7 @@
 package com.algolia.connector.connector.fetcher;
 
 import com.algolia.connector.connector.model.ConfigFileModel;
-import com.algolia.connector.connector.model.ConfigurationData;
-import com.algolia.connector.connector.model.ShopPhereMongoRequest;
+import com.algolia.connector.connector.model.TransformModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
@@ -10,9 +9,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -26,7 +22,7 @@ public class ConfigFileFetcher {
         String tranformerJsonFilePath = "C:\\Users\\Dhanesh K J\\Desktop\\Algolia\\TransformerJson.json";
 
         Document fileConfiguration = null;
-        Map<String, String> transformerJson = null;
+        Document transformerJson = null;
         try {
             fileConfiguration = readJSONFile(jsonFilePath);
             transformerJson = readJSONFileAndConvertToMap(tranformerJsonFilePath);
@@ -44,8 +40,9 @@ public class ConfigFileFetcher {
             return null;
         }
         ConfigFileModel configFileModel = new ConfigFileModel();
-        configFileModel.setTransformerJson(transformerJson);
+        // configFileModel.setTransformModel(transformerJson);
         configFileModel.setFileConfiguration(fileConfiguration);
+        configFileModel.setTransformModel(transformerJson);
         return configFileModel;
     }
 
@@ -57,13 +54,12 @@ public class ConfigFileFetcher {
         return fileConfiguration;
     }
 
-    public Map<String, String> readJSONFileAndConvertToMap(String filePath) throws IOException {
+    public Document readJSONFileAndConvertToMap(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File(filePath);
         // Use the ObjectMapper to read the JSON file and map it to the Document object.
-        Map<String, String> fileConfiguration = objectMapper.readValue(jsonFile, Map.class);
+        Document fileConfiguration = objectMapper.readValue(jsonFile, Document.class);
         return fileConfiguration;
     }
-
 
 }

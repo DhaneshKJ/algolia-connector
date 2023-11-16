@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 @Data
-public class ConfigFileModel {
+public class AttributeTransformRequest {
 
-    private Document fileConfiguration;
+    private List<Document> documents;
 
-    private Document transformModel;
+    private Map<String, String> fieldsToUpdate;
 
 }

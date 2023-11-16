@@ -17,7 +17,7 @@ import java.util.Map;
 
 @Component
 @ConfigurationProperties(prefix = "mongo")
-public class MongoConnector extends NoSqlConnector {
+public class MongoConnector implements NoSqlConnector {
 
     private final MongoConfig mongoConfig;
 

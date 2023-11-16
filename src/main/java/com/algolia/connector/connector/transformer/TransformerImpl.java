@@ -1,6 +1,7 @@
 package com.algolia.connector.connector.transformer;
 
 import com.algolia.connector.connector.model.ValueTransformRequest;
+import org.bson.Document;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -11,18 +12,18 @@ import java.util.Map;
 
 @Service
 @Component
-public class ValueTransformerImpl implements ValueTransformer {
+public class TransformerImpl implements Transformer {
 
-    public List<Object> valueTransformer(ValueTransformRequest valueTransformRequest) {
-        List<Object> originalValue = valueTransformRequest.getInputType();
+    public List<Document> valueTransformer(ValueTransformRequest valueTransformRequest) {
+        List<Document> originalValue = valueTransformRequest.getInputType();
 
         Map<String, String> transformationType = valueTransformRequest.getOutputType();
-        List<Object> transformedValue = new ArrayList<>();
+        List<Document> transformedValue = new ArrayList<>();
 
-        for (Object value : originalValue) {
-            if (value instanceof Map) {
-                Map<?, ?> mapValue = (Map<?, ?>) value;
-                Map<String, Object> transformedEntry = new LinkedHashMap<>(); // Use LinkedHashMap to maintain order
+        for (Document document : originalValue) {
+            if (document instanceof Map) {
+                Map<?, ?> mapValue = (Map<?, ?>) document;
+                Document transformedDocument = new Document(); // Assuming Document is a class or you may need to use another class
 
                 for (Map.Entry<?, ?> entry : mapValue.entrySet()) {
                     String fieldName = (String) entry.getKey();
@@ -31,12 +32,12 @@ public class ValueTransformerImpl implements ValueTransformer {
                     if (transformationType.containsKey(fieldName)) {
                         String type = transformationType.get(fieldName);
                         Object transformedFieldValue = applyTransformation(type, fieldValue);
-                        transformedEntry.put(fieldName, transformedFieldValue);
+                        transformedDocument.put(fieldName, transformedFieldValue);
                     } else {
-                        transformedEntry.put(fieldName, fieldValue);
+                        transformedDocument.put(fieldName, fieldValue);
                     }
                 }
-                transformedValue.add(transformedEntry);
+                transformedValue.add(transformedDocument);
             }
         }
         return transformedValue;
@@ -73,6 +74,24 @@ public class ValueTransformerImpl implements ValueTransformer {
         }
         // If no transformation is applied or the transformation type is not recognized
         return fieldValue;
+    }
+
+    public List<Document> attributeTransformer(List<Document> documents, Map<String, String> fieldsToUpdate) {
+        List<Document> updatedIndexObjects = new ArrayList<>();
+        for (Document document : documents) {
+            Document updatedDocument = new Document(document);
+            Map<String, String> fieldMappings = fieldsToUpdate;
+            for (Map.Entry<String, String> entry : fieldMappings.entrySet()) {
+                String oldFieldName = entry.getKey();
+                String newFieldName = entry.getValue();
+                if (updatedDocument.containsKey(oldFieldName)) {
+                    updatedDocument.put(newFieldName, updatedDocument.get(oldFieldName));
+                    updatedDocument.remove(oldFieldName);
+                }
+            }
+            updatedIndexObjects.add(updatedDocument);
+        }
+        return updatedIndexObjects;
     }
 
 }

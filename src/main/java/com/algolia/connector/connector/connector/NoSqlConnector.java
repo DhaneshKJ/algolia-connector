@@ -1,5 +1,7 @@
 package com.algolia.connector.connector.connector;
 
-public class NoSqlConnector implements DatabaseConnector {
+public interface NoSqlConnector extends DatabaseConnector {
+
+    
 
 }
