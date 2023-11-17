@@ -25,30 +25,28 @@ public class ShopsPhereMongoConnector extends MongoConnector {
      */
     public List<Document> shopsphereMongoDataAggregator(ShopPhereMongoRequest shopPhereMongoRequest) {
         List<Document> updatedProducts = new ArrayList<>();
-        if ("ShopsPhereMongo".equals(shopPhereMongoRequest.getInputType())) {
-            String clientId = shopPhereMongoRequest.getClientId();
-            Boolean active = shopPhereMongoRequest.isActive();
-            List<String> mappingProperties = new ArrayList<>();
-            List<String> fields = new ArrayList<>();
-            shopPhereMongoRequest.getConfigurationData().forEach(configurationData -> {
-                String collectionName = configurationData.getCollectionName();
-                fields.addAll(configurationData.getFieldsToFetch());
-                List<String> currentFields = configurationData.getFieldsToFetch();
-                if (configurationData.getMappingProperties() != null) {
-                    mappingProperties.addAll(configurationData.getMappingProperties());
-                }
-                if ("default".equals(configurationData.getType())) {
-                    updatedProducts.addAll(mapDefault(clientId, active, collectionName, currentFields,
-                            configurationData.getMappingProperties(), shopPhereMongoRequest));
-                }
-                if ("direct".equals(configurationData.getType())) {
-                    updatedProducts.addAll(mapDirectFields(updatedProducts, shopPhereMongoRequest));
-                }
-                if ("inDirect".equals(configurationData.getType())) {
-                    updatedProducts.addAll(mapInDirectFields(updatedProducts, shopPhereMongoRequest));
-                }
-            });
-        }
+        String clientId = shopPhereMongoRequest.getClientId();
+        Boolean active = shopPhereMongoRequest.isActive();
+        List<String> mappingProperties = new ArrayList<>();
+        List<String> fields = new ArrayList<>();
+        shopPhereMongoRequest.getConfigurationData().forEach(configurationData -> {
+            String collectionName = configurationData.getCollectionName();
+            fields.addAll(configurationData.getFieldsToFetch());
+            List<String> currentFields = configurationData.getFieldsToFetch();
+            if (configurationData.getMappingProperties() != null) {
+                mappingProperties.addAll(configurationData.getMappingProperties());
+            }
+            if ("default".equals(configurationData.getType())) {
+                updatedProducts.addAll(mapDefault(clientId, active, collectionName, currentFields,
+                        configurationData.getMappingProperties(), shopPhereMongoRequest));
+            }
+            if ("direct".equals(configurationData.getType())) {
+                updatedProducts.addAll(mapDirectFields(updatedProducts, shopPhereMongoRequest));
+            }
+            if ("inDirect".equals(configurationData.getType())) {
+                updatedProducts.addAll(mapInDirectFields(updatedProducts, shopPhereMongoRequest));
+            }
+        });
         List<Document> aggregatedObjects = removeDuplicates(updatedProducts);
         return aggregatedObjects;
     }

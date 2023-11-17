@@ -13,6 +13,7 @@ import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -46,8 +47,12 @@ public class ConnectorServiceImpl implements ConnectorService {
                 configFiles.getTransformModel());
 
         // raw data aggregation
-        List<Document> aggregatedObjects = shopsPhereMongoConnector.shopsphereMongoDataAggregator(
-                shopPhereMongoRequest);
+        List<Document> aggregatedObjects = new ArrayList<>();
+
+        //shopsphere mongo connector
+        if ("ShopsphereMongoConnector".equals(shopPhereMongoRequest.getInputType())) {
+            aggregatedObjects.addAll(shopsPhereMongoConnector.shopsphereMongoDataAggregator(shopPhereMongoRequest));
+        }
 
         ValueTransformRequest valueTransformRequest = new ValueTransformRequest();
         valueTransformRequest.setInputType(aggregatedObjects);
