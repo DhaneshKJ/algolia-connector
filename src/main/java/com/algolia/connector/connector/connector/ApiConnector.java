@@ -1,5 +1,5 @@
 package com.algolia.connector.connector.connector;
 
-public interface ApiConnector extends  Connector{
+public interface ApiConnector extends Connector {
 
 }
