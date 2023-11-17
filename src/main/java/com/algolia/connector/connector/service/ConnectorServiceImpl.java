@@ -67,6 +67,8 @@ public class ConnectorServiceImpl implements ConnectorService {
 
         //List<Document> updatedVal = ShopsPhereMongoConnector.updateValues(aggregatedObjects, transformedValues);
         // List<Document> removeDuplicates = ShopsPhereMongoConnector.removeDuplicates(updatedVal);
+
+        //calling algolia for indexing
         List<Document> indexObjects = index.bulkIndex(configFiles.getFileConfiguration(), transformedAttribute);
         return indexObjects;
     }
