@@ -1,0 +1,7 @@
+mongo:
+  connection:
+    url: "mongodb://mozanta_commerce_app_user:30oct2019**@localhost:18401/mozantacommerce"
+  database:
+    name: "mozantacommerce"
+
+
