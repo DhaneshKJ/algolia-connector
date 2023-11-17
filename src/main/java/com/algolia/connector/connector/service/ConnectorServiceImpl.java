@@ -37,14 +37,18 @@ public class ConnectorServiceImpl implements ConnectorService {
      */
     @Override
     public List<Document> connectorEngine() {
+
+        //config fetcher
         ConfigFileModel configFiles = configFetcher.fetchConfigFile();
         ShopPhereMongoRequest shopPhereMongoRequest = ShopsphereTransformer.convertToShopPhereMongoRequest(
                 configFiles.getFileConfiguration());
         TransformModel transformModel = ShopsphereTransformer.transformModelTransformer(
                 configFiles.getTransformModel());
+
         // raw data aggregation
         List<Document> aggregatedObjects = shopsPhereMongoConnector.shopsphereMongoDataAggregator(
                 shopPhereMongoRequest);
+
         ValueTransformRequest valueTransformRequest = new ValueTransformRequest();
         valueTransformRequest.setInputType(aggregatedObjects);
         valueTransformRequest.setOutputType(transformModel.getValueTransformMap());
