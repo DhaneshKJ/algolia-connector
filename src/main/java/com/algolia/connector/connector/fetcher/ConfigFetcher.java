@@ -1,7 +1,6 @@
 package com.algolia.connector.connector.fetcher;
 
 import com.algolia.connector.connector.model.ConfigFileModel;
-import com.algolia.connector.connector.model.TransformModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.bson.Document;
 import org.springframework.stereotype.Component;
@@ -9,12 +8,16 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Map;
 
 @Service
 @Component
-public class ConfigFileFetcher {
+public class ConfigFetcher {
 
+    /**
+     * This method is used to fetch configuration file
+     *
+     * @return ConfigFileModel
+     */
     public ConfigFileModel fetchConfigFile() {
 
         // Read JSON data from a file and map it to the Document object
@@ -25,8 +28,7 @@ public class ConfigFileFetcher {
         Document transformerJson = null;
         try {
             fileConfiguration = readJSONFile(jsonFilePath);
-            transformerJson = readJSONFileAndConvertToMap(tranformerJsonFilePath);
-
+            transformerJson = readJSONFile(tranformerJsonFilePath);
         } catch (IOException e) {
             e.printStackTrace();
             // Handle the error appropriately
@@ -46,6 +48,12 @@ public class ConfigFileFetcher {
         return configFileModel;
     }
 
+    /**
+     * This method is used to read json data from file path and convert to document
+     *
+     * @param filePath
+     * @return Document
+     */
     public Document readJSONFile(String filePath) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         File jsonFile = new File(filePath);
@@ -53,13 +61,4 @@ public class ConfigFileFetcher {
         Document fileConfiguration = objectMapper.readValue(jsonFile, Document.class);
         return fileConfiguration;
     }
-
-    public Document readJSONFileAndConvertToMap(String filePath) throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-        File jsonFile = new File(filePath);
-        // Use the ObjectMapper to read the JSON file and map it to the Document object.
-        Document fileConfiguration = objectMapper.readValue(jsonFile, Document.class);
-        return fileConfiguration;
-    }
-
 }

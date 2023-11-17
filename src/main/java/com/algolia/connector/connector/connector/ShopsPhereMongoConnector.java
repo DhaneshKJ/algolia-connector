@@ -1,4 +1,4 @@
-    package com.algolia.connector.connector.connector;
+package com.algolia.connector.connector.connector;
 
 import com.algolia.connector.connector.model.ShopPhereMongoRequest;
 import com.algolia.connector.connector.mongoConfig.MongoConfig;
@@ -16,6 +16,12 @@ public class ShopsPhereMongoConnector extends MongoConnector {
         super(mongoConfig);
     }
 
+    /**
+     * This method is used to aggregate documents from different collections
+     *
+     * @param shopPhereMongoRequest
+     * @return List<Document>
+     */
     public List<Document> shopsphereMongoDataAggregator(ShopPhereMongoRequest shopPhereMongoRequest) {
         List<Document> updatedProducts = new ArrayList<>();
         if ("ShopsPhereMongo".equals(shopPhereMongoRequest.getInputType())) {
@@ -23,12 +29,10 @@ public class ShopsPhereMongoConnector extends MongoConnector {
             Boolean active = shopPhereMongoRequest.isActive();
             List<String> mappingProperties = new ArrayList<>();
             List<String> fields = new ArrayList<>();
-
             shopPhereMongoRequest.getConfigurationData().forEach(configurationData -> {
                 String collectionName = configurationData.getCollectionName();
                 fields.addAll(configurationData.getFieldsToFetch());
                 List<String> currentFields = configurationData.getFieldsToFetch();
-
                 if (configurationData.getMappingProperties() != null) {
                     mappingProperties.addAll(configurationData.getMappingProperties());
                 }
@@ -44,56 +48,36 @@ public class ShopsPhereMongoConnector extends MongoConnector {
                 }
             });
         }
-
         List<Document> aggregatedObjects = removeDuplicates(updatedProducts);
-
         return aggregatedObjects;
     }
 
+    /**
+     * This method is used to remove duplicate objects in document list
+     *
+     * @param updatedProducts
+     * @return List<Document>
+     */
     public static List<Document> removeDuplicates(List<Document> updatedProducts) {
         HashSet<Document> uniqueSet = new HashSet<>();
         List<Document> uniqueDocuments = new ArrayList<>();
-
         for (Document doc : updatedProducts) {
             // If the document is successfully added to the set, it's unique
             if (uniqueSet.add(doc)) {
                 uniqueDocuments.add(doc);
             }
-            // If the document is not added, it's a duplicate, and we skip it
         }
-
         return uniqueDocuments;
     }
 
-    public static List<Document> updateValues(List<Document> inputObjects, List<Object> transformedResult) {
-        List<Document> updatedObjects = new ArrayList<>();
-
-        int minSize = Math.min(inputObjects.size(), transformedResult.size());
-
-        for (int i = 0; i < minSize; i++) {
-            Document inputObject = inputObjects.get(i);
-            Object transformedEntry = transformedResult.get(i);
-
-            if (transformedEntry instanceof Map) {
-                Map<?, ?> transformedMap = (Map<?, ?>) transformedEntry;
-
-                Set<String> inputKeys = inputObject.keySet();
-
-                for (Object key : transformedMap.keySet()) {
-                    if (inputKeys.contains(key)) {
-                        // Key is present in both inputObject and transformedResult
-                        // Overwrite the value in inputObject
-                        inputObject.put((String) key, transformedMap.get(key));
-                    }
-                }
-
-                updatedObjects.add(inputObject);
-            }
-        }
-
-        return updatedObjects;
-    }
-
+    /**
+     * This method is utilized for linking current collection to other collections using fields and values within the
+     * current collection.
+     *
+     * @param updatedProducts
+     * @param shopPhereMongoRequest
+     * @return List<Document>
+     */
     public List<Document> mapDirectFields(List<Document> updatedProducts, ShopPhereMongoRequest shopPhereMongoRequest) {
         String clientId = shopPhereMongoRequest.getClientId();
         Boolean active = shopPhereMongoRequest.isActive();
@@ -115,7 +99,6 @@ public class ShopsPhereMongoConnector extends MongoConnector {
 
                         List<Document> fetchedBrands = fetchDataByDirectCriteria(clientId, active, collectionName,
                                 productBrandIds, fields);
-
                         // Remove "_id" field from fetched categories
                         fetchedCategories.forEach(category -> category.remove("_id"));
                         // Remove "_id" field from fetched brands
@@ -124,27 +107,29 @@ public class ShopsPhereMongoConnector extends MongoConnector {
                         if (!fetchedCategories.isEmpty()) {
                             pro.append("categories", fetchedCategories);
                         }
-
                         // Add fetched brands to the product
                         if (!fetchedBrands.isEmpty()) {
                             pro.append("brand", fetchedBrands);
                         }
-
                         // removeUnwantedFields(pro, fields);
-
                         updatedProductsList.add(pro);
                     }
                 }
             }
-
         });
-
         return updatedProductsList;
     }
 
+    /**
+     * This method is utilized for linking from current collection to other collections using fields and values from
+     * other collection.
+     *
+     * @param updatedProducts
+     * @param shopPhereMongoRequest
+     * @return List<Document>
+     */
     private List<Document> mapInDirectFields(List<Document> updatedProducts,
             ShopPhereMongoRequest shopPhereMongoRequest) {
-        String clientId = shopPhereMongoRequest.getClientId();
         Boolean active = shopPhereMongoRequest.isActive();
         List<Document> updatedProductsList = new ArrayList<>();
         shopPhereMongoRequest.getConfigurationData().forEach(configurationData -> {
@@ -160,25 +145,18 @@ public class ShopsPhereMongoConnector extends MongoConnector {
                     if (productId != null) {
                         List<Document> fetchedPrice = fetchDataByInDirectCriteria(configurationData.getPriceType(),
                                 active, collectionName, productId, fields, mappingProperties);
-
                         // Add fetched categories to the product
                         if (!fetchedPrice.isEmpty()) {
                             pro.append("price", fetchedPrice);
                         }
-
                         // Remove "_id" field from fetched price
                         fetchedPrice.forEach(price -> price.remove("_id"));
-
                         // removeUnwantedFields(pro, fields);
-
                         updatedProductsList.add(pro);
                     }
                 }
             }
-
         });
         return updatedProductsList;
-
     }
-
 }

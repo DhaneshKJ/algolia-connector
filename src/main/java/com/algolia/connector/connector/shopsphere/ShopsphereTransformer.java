@@ -16,6 +16,12 @@ import java.util.Map;
 @Service
 public class ShopsphereTransformer {
 
+    /**
+     * This method is used to convert configuration file to shopsphere config model
+     *
+     * @param document
+     * @return ShopPhereMongoRequest
+     */
     public static ShopPhereMongoRequest convertToShopPhereMongoRequest(Document document) {
         ShopPhereMongoRequest request = new ShopPhereMongoRequest();
 
@@ -31,12 +37,9 @@ public class ShopsphereTransformer {
 
         if (configDataObject instanceof List) {
             List<?> configDataList = (List<?>) configDataObject;
-
             List<ConfigurationData> configurationDataList = new ArrayList<>();
-
             for (Object configDataEntry : configDataList) {
                 ConfigurationData configData;
-
                 if (configDataEntry instanceof Document) {
                     configData = convertToConfigurationData((Document) configDataEntry);
                 } else if (configDataEntry instanceof LinkedHashMap) {
@@ -56,29 +59,30 @@ public class ShopsphereTransformer {
                     // Log the unexpected type
                     System.err.println(
                             "Unexpected type within 'configurationData' list: " + configDataEntry.getClass());
-
                     // Handle other cases or throw an exception if necessary
                     throw new RuntimeException("Unexpected type within 'configurationData' list");
                 }
-
                 configurationDataList.add(configData);
             }
-
             request.setConfigurationData(configurationDataList);
         } else if (configDataObject instanceof Document) {
             ConfigurationData configData = convertToConfigurationData((Document) configDataObject);
             List<ConfigurationData> configurationDataList = new ArrayList<>();
             configurationDataList.add(configData);
-
             request.setConfigurationData(configurationDataList);
         } else {
             // Handle other cases or throw an exception if necessary
             throw new RuntimeException("Unexpected type for 'configurationData'");
         }
-
         return request;
     }
 
+    /**
+     * This method is used to convert configurationData object to ConfigurationData model
+     *
+     * @param document
+     * @return ConfigurationData
+     */
     private static ConfigurationData convertToConfigurationData(Document document) {
         ConfigurationData configData = new ConfigurationData();
 
@@ -94,10 +98,22 @@ public class ShopsphereTransformer {
         return configData;
     }
 
+    /**
+     * This method is used to convert transformDocument to TransformModel
+     *
+     * @param transformDocument
+     * @return TransformModel
+     */
     public static TransformModel transformModelTransformer(Document transformDocument) {
         TransformModel transformModel = new TransformModel();
-        transformModel.setValueTransformMap((Map<String, String>) transformDocument.get("valueTransform"));
-        transformModel.setAttributeTransformMap((Map<String, String>) transformDocument.get("attributeTransform"));
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> valueTransformMap = (Map<String, String>) transformDocument.get("valueTransform");
+        transformModel.setValueTransformMap(valueTransformMap);
+
+        @SuppressWarnings("unchecked")
+        Map<String, String> attributeTransformMap = (Map<String, String>) transformDocument.get("attributeTransform");
+        transformModel.setAttributeTransformMap(attributeTransformMap);
         return transformModel;
     }
 
