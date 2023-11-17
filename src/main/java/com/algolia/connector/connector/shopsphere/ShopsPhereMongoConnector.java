@@ -1,5 +1,6 @@
-package com.algolia.connector.connector.connector;
+package com.algolia.connector.connector.shopsphere;
 
+import com.algolia.connector.connector.connector.MongoConnector;
 import com.algolia.connector.connector.model.ShopPhereMongoRequest;
 import com.algolia.connector.connector.mongoConfig.MongoConfig;
 import org.bson.Document;

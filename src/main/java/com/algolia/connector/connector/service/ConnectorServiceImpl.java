@@ -1,7 +1,7 @@
 package com.algolia.connector.connector.service;
 
 import com.algolia.connector.connector.algolia.Index;
-import com.algolia.connector.connector.connector.ShopsPhereMongoConnector;
+import com.algolia.connector.connector.shopsphere.ShopsPhereMongoConnector;
 import com.algolia.connector.connector.fetcher.ConfigFetcher;
 import com.algolia.connector.connector.model.ConfigFileModel;
 import com.algolia.connector.connector.model.ShopPhereMongoRequest;
