@@ -38,8 +38,8 @@ public class ShopsPhereMongoConnector extends MongoConnector {
                     mappingProperties.addAll(configurationData.getMappingProperties());
                 }
                 if ("default".equals(configurationData.getType())) {
-                    updatedProducts.addAll(fetchDataByDefaultCriteria(clientId, active, collectionName, currentFields,
-                            configurationData.getMappingProperties()));
+                    updatedProducts.addAll(mapDefault(clientId, active, collectionName, currentFields,
+                            configurationData.getMappingProperties(), shopPhereMongoRequest));
                 }
                 if ("direct".equals(configurationData.getType())) {
                     updatedProducts.addAll(mapDirectFields(updatedProducts, shopPhereMongoRequest));
@@ -119,6 +119,24 @@ public class ShopsPhereMongoConnector extends MongoConnector {
             }
         });
         return updatedProductsList;
+    }
+
+    /**
+     * This method is utilized for linking current collection to other collections using fields and values within the
+     * current collection.
+     *
+     * @return List<Document>
+     */
+    public List<Document> mapDefault(String clientId, Boolean active, String collectionName, List<String> currentFields,
+            List<String> mappingProperties, ShopPhereMongoRequest shopPhereMongoRequest) {
+        List<Document> docs = new ArrayList<>();
+        shopPhereMongoRequest.getConfigurationData().forEach(configurationData -> {
+            if ("default".equals(configurationData.getType())) {
+                docs.addAll(
+                        fetchDataByDefaultCriteria(clientId, active, collectionName, currentFields, mappingProperties));
+            }
+        });
+        return docs;
     }
 
     /**
