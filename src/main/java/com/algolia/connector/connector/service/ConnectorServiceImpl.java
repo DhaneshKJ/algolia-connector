@@ -54,12 +54,8 @@ public class ConnectorServiceImpl implements ConnectorService {
             aggregatedObjects.addAll(shopsPhereMongoConnector.shopsphereMongoDataAggregator(shopPhereMongoRequest));
         }
 
-        ValueTransformRequest valueTransformRequest = new ValueTransformRequest();
-        valueTransformRequest.setInputType(aggregatedObjects);
-        valueTransformRequest.setOutputType(transformModel.getValueTransformMap());
-
         //value transformer
-        List<Document> transformedValues = transformer.valueTransformer(valueTransformRequest);
+        List<Document> transformedValues = transformer.valueTransformer(aggregatedObjects,transformModel.getValueTransformMap());
 
         //attribute transformer
         List<Document> transformedAttribute = transformer.attributeTransformer(transformedValues,

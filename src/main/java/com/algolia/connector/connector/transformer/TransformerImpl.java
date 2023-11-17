@@ -14,10 +14,10 @@ import java.util.Map;
 @Component
 public class TransformerImpl implements Transformer {
 
-    public List<Document> valueTransformer(ValueTransformRequest valueTransformRequest) {
-        List<Document> originalValue = valueTransformRequest.getInputType();
+    public List<Document> valueTransformer(List<Document> aggregatedObjects, Map<String, String> fieldsToUpdate) {
+        List<Document> originalValue = aggregatedObjects;
 
-        Map<String, String> transformationType = valueTransformRequest.getOutputType();
+        Map<String, String> transformationType = fieldsToUpdate;
         List<Document> transformedValue = new ArrayList<>();
 
         for (Document document : originalValue) {

@@ -8,7 +8,7 @@ import java.util.Map;
 
 public interface Transformer {
 
-    public List<Document> valueTransformer(ValueTransformRequest valueTransformRequest);
+    public List<Document> valueTransformer(List<Document> aggregatedObjects, Map<String, String> fieldsToUpdate);
 
     public List<Document> attributeTransformer(List<Document> documents, Map<String, String> fieldsToUpdate);
 
